@@ -1,5 +1,6 @@
 package com.first.calculator
 
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -14,7 +15,7 @@ class MainActivity : AppCompatActivity() {
     private var isFirstInput: Boolean = true
     private var resultNumber: Int = 0
     private var opResult: Char = '+'
-    val CLEAR_INPUT_TEXT: String = "0"
+    private val CLEAR_INPUT_TEXT: String = "0"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,91 +24,114 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun buttonClick(view: View) {
-        val getbutton: Button = findViewById(view.id)
-        Log.e("buttonClick", "buttonClick 시 " + getbutton.text.toString())
-        Log.d("buttonClick", "resultNumber = $resultNumber")
+
+        if (view.id == R.id.all_clear_button) {
+            isFirstInput = true
+            resultNumber = 0
+            opResult = '+'
+            resultText.setTextColor(Color.parseColor("#666666"))
+            resultText.text = resultNumber.toString()
+        }
 
         when (view.id) {
             R.id.all_clear_button -> {
-                isFirstInput = true
                 resultNumber = 0
                 opResult = '+'
-                resultText.setTextColor(0xFF666666.toInt())
-                resultText.setText(CLEAR_INPUT_TEXT)
+                setClearText(CLEAR_INPUT_TEXT)
             }
             R.id.clear_entry_button -> {
-                isFirstInput = true
-                resultText.setText(CLEAR_INPUT_TEXT)
+                setClearText(CLEAR_INPUT_TEXT)
             }
             R.id.back_sp_button -> {
                 if (resultText.text.toString().length > 1) {
-                    val getResultText = resultText.text.toString()
-                    val subString = getResultText.substring(0, getResultText.length - 1)
-                    resultText.text = subString
+                    var getResultText: String = resultText.text.toString()
+                    var subString: String = getResultText.substring(0, getResultText.length - 1)
+                    resultText.setText(subString)
                 } else {
-                    resultText.setTextColor(0xFF666666.toInt())
-                    resultText.setText(CLEAR_INPUT_TEXT)
-                    isFirstInput = true
+                    setClearText(CLEAR_INPUT_TEXT)
                 }
             }
             R.id.decimal_button -> {
-                Log.e("buttonClick", getbutton.text.toString())
+                Log.e("buttonClick",  "decimal_button 버튼이 클릭되었습니다")
             }
 
-            R.id.Addition_button, R.id.subtraction_button, R.id.deivision_button, R.id.multiply_button -> {
-                val lastNum = resultText.text.toString().toInt()
-                if (opResult == '+') {
-                    resultNumber + lastNum
-                } else if (opResult == '-') {
-                    resultNumber - lastNum
-                } else if (opResult == '/') {
-                    resultNumber / lastNum
-                } else if (opResult == '*') {
-                    resultNumber * lastNum
-                }
-                opResult = getbutton.text.toString()[0]
-                resultText.text = resultNumber.toString()
-                isFirstInput = true
-                Log.d("buttonClick", "addresultNumber = $resultNumber")
-            }
-            R.id.redsult_button -> {
-                if (opResult == '+') {
-                    resultNumber += resultText.text.toString().toInt()
-                } else if (opResult == '-') {
-                    resultNumber -= resultText.text.toString().toInt()
-                } else if (opResult == '/') {
-                    resultNumber /= resultText.text.toString().toInt()
-                } else if (opResult == '*') {
-                    resultNumber *= resultText.text.toString().toInt()
-                }
-                resultText.text = resultNumber.toString()
-                isFirstInput = true
-                Log.d("buttonClick", "addresultNumber = $resultNumber")
-            }
 
-            R.id.num_0_button, R.id.num_1_button, R.id.num_2_button, R.id.num_3_button, R.id.num_4_button,
-            R.id.num_5_button, R.id.num_6_button, R.id.num_7_button, R.id.num_8_button, R.id.num_9_button -> {
-                if (isFirstInput) {
-                    resultText.setTextColor(0xFF000000.toInt())
-                    resultText.text = getbutton.text.toString()
-                    isFirstInput = false
-                    Toast.makeText(this, "Button Clicked!", Toast.LENGTH_LONG).show()
-                    Log.e("buttonClick", "default " + getbutton.text.toString() + " 버튼이 클릭 되었습니다")
-                } else {
-                    resultNumber = (resultNumber.toString() + getbutton.text.toString()).toInt()
-                    resultText.text = resultNumber.toString()
-                    Log.e("buttonClick", "default " + getbutton.text.toString() + " 버튼이 클릭 되었습니다")
-                }
+        }
+
+    }
+    //입력된 숫자를 클리어
+    fun setClearText(clearText: String) {
+        resultText.setTextColor(Color.parseColor("#666666"))
+        isFirstInput = true
+        resultText.setText(clearText)
+    }
+    //0~9 버튼 클릭 메소드
+    fun numButtonClick(view: View) {
+        val getbutton = findViewById<Button>(view.id)
+        if (isFirstInput) {
+            resultText.setTextColor(-16777216)
+            resultText.setText(getbutton.text.toString())
+            isFirstInput = false
+        } else {
+            if(resultText.text.toString().equals("0")){
+                Toast.makeText(applicationContext,"0으로 시작하는 숫자는 없음",Toast.LENGTH_LONG).show()
+                setClearText("0")
+                return
             }
-            else -> {
-                //Toast.makeText(applicationContext, getbutton.text.toString(), Toast.LENGTH_LONG).show()
-                Log.e("buttonClick", "default " + getbutton.text.toString())
-            }
+            resultText.append(getbutton.text.toString())
+            // Log.e("buttonClick", "default $getbutton 버튼이 클릭 되었습니다")
         }
     }
-    public fun numButtonClick(view: View){
+    //연산자가 클리 됐을때 실행
+    fun operatorClick(view: View) {
+        val getbutton = findViewById<Button>(view.id)
+
+        if (view.id == R.id.result_text) {
+            if(isFirstInput){
+                resultNumber = 0
+                opResult = '+'
+                setClearText(CLEAR_INPUT_TEXT)
+                // TODO: 2023-07-18 다음 실수형 계산기 만들때 윈도우 계산기 처럼 =을 두번 이상 누를때 실행 방법과 같이 구현!
+            }else{
+                resultNumber =
+                    intCal(resultNumber, Integer.parseInt(resultText.text.toString()), opResult)
+                resultText.setText(resultNumber.toString())
+                isFirstInput = true
+            }
+
+        } else {
+            if(isFirstInput){
+                opResult = getbutton.text.toString()[0]
+            }else{
+                var lastNum = Integer.parseInt(resultText.text.toString())
+                resultNumber = intCal(resultNumber, lastNum, opResult)
+                opResult = getbutton.text.toString()[0]
+                resultText.setText(resultNumber.toString())
+                isFirstInput = true
+            }
+
+
+        }
+
 
     }
+
+    // 사칙연산 메소드
+    fun intCal(result: Int, lastNum: Int, operator: Char): Int {
+        var calculatedResult = result
+
+        if (operator == '+') {
+            calculatedResult += lastNum
+        } else if (operator == '-') {
+            calculatedResult -= lastNum
+        } else if (operator == '/') {
+            calculatedResult /= lastNum
+        } else if (operator == '*') {
+            calculatedResult *= lastNum
+        }
+
+        return calculatedResult
+    }
+
+
 }
-
-
