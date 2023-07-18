@@ -12,10 +12,10 @@ import android.widget.Toast
 class MainActivity : AppCompatActivity() {
 
     private lateinit var resultText: TextView
-    private var isFirstInput: Boolean = true
-    private var resultNumber: Int = 0
-    private var opResult: Char = '+'
-    private val CLEAR_INPUT_TEXT: String = "0"
+    private var isFirstInput: Boolean = true  //처음 입력시 true
+    private var resultNumber: Int = 0  //결과 초기값
+    private var opResult: Char = '+'  //초기 연산자
+    private val CLEAR_INPUT_TEXT: String = "0"  //계산기의 clear를 눌렀을때 0이 되는걸 상수로 표현
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,9 +23,9 @@ class MainActivity : AppCompatActivity() {
         resultText = findViewById(R.id.result_text)
     }
 
-    fun buttonClick(view: View) {
+    fun buttonClick(view: View) {  //버튼 클릭 리스너
 
-        if (view.id == R.id.all_clear_button) {
+        if (view.id == R.id.all_clear_button) { //모두 지우기 버튼을 눌렀을 경우
             isFirstInput = true
             resultNumber = 0
             opResult = '+'
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
             resultText.text = resultNumber.toString()
         }
 
-        when (view.id) {
+        when (view.id) {  //자바에선 switch 이지만 코틀린에서 when이라 쓰이길래 애먹었습니다..
             R.id.all_clear_button -> {
                 resultNumber = 0
                 opResult = '+'
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
             R.id.clear_entry_button -> {
                 setClearText(CLEAR_INPUT_TEXT)
             }
-            R.id.back_sp_button -> {
+            R.id.back_sp_button -> {   //back 버튼을 누르면 하나씩 지워지는 부분
                 if (resultText.text.toString().length > 1) {
                     var getResultText: String = resultText.text.toString()
                     var subString: String = getResultText.substring(0, getResultText.length - 1)
